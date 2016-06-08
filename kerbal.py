@@ -1,8 +1,8 @@
 import math
 
-# Newton's Universal Constant of Gravitation
 G = 6.67408e-11
 g = 9.81
+
 
 def deltaV(isp, fuel):
     """Return the DeltaV of a rocket's stage.
@@ -50,6 +50,7 @@ def semiMajorApo(sma, peri, r):
     peri -- Periapsis of your orbit
     r -- Radius of central body
     """
+    # semiMajorAxis rearranged to solve for apoapsis
     apo = 2 * (sma - r) - peri
     return apo
 
@@ -61,6 +62,7 @@ def semiMajorPeri(sma, apo, r):
     apo -- Apoapsis of your orbit
     r -- Radius of central body
     """
+    # semiMajorAxis rearranged to solve for periapsis
     peri = 2 * (sma - r) - apo
     return peri
 
@@ -130,6 +132,7 @@ def escapeSurface(M, r):
     M -- Mass of central body
     r -- Radius of central body
     """
+    # Degenerate Vis-Viva with infinite SMA (or equivalently, 1/a = 0).
     ve = (2 * G * M / r) ** 0.5
     return ve
 
@@ -172,7 +175,7 @@ def orbitalPeriod(sma, M):
     sma -- Semi-major axis of orbiting body
     M -- Mass of central body
     """
-    # Kepler's Third Law
+    # Kepler's Third Law rearranged to solve for orbital period
     T = 2 * math.pi * (sma ** 3 / (G * M)) ** 0.5
     return T
 
@@ -183,10 +186,9 @@ def semiMajorPeriod(T, M):
     T -- Sidereal orbital period
     M -- Mass of central body
     """
+    # Kepler's Third Law rearranged to solve for semi-major axis
     sma =(G * M * T ** 2 / (4 * math.pi ** 2)) ** (1/3)
     return sma
-
-
 
 
 if __name__ == '__main__':
