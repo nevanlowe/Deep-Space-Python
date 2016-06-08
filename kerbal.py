@@ -106,13 +106,19 @@ def hohmannAngle(h1, h2, r):
     return phase
 
 
-def hohmannVelocity(h1, h2, r, M):
-    """Return necessary DeltaV for both burns in a Hohmann Transfer as a tuple.
+def hohmannVelocity(h1, h2, r, M, singlevalue=False):
+    """Return necessary DeltaV required for a Hohmann Transfer.
+
+    Can either return the value for both burns as a tuple (more useful for
+    orbital maneuvering) or as the sum of the burns as a single value (more
+    convenient for DeltaV budget analysis).
 
     h1 -- Initial orbit height
     h2 -- Final orbit height
     r -- Radius of central body
     M -- Mass of central body
+    singlevalue -- True returns the sum of the DeltaV needed, False (default)
+    returns a tuple
     """
     # Adds the central body's radius to the two altitudes because KSP's
     # altitude meter does not include the central body's radius.
@@ -123,7 +129,10 @@ def hohmannVelocity(h1, h2, r, M):
     # that circularizes your orbit at the apoaspis of the elliptical orbit).
     dv1 = (G * M / r1) ** 0.5 * ((2 * r2 / (r1 + r2)) ** 0.5 - 1)
     dv2 = (G * M / r2) ** 0.5 * (1 - (2 * r1 / (r1 + r2)) ** 0.5)
-    return dv1, dv2
+    if singlevalue:
+        return dv1 + dv2
+    else:
+        return dv1, dv2
 
 
 def escapeSurface(M, r):
