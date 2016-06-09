@@ -1,7 +1,7 @@
 import math
 
 G = 6.67408e-11
-g = 9.81
+g0 = 9.81
 
 
 def deltaV(isp, fuel):
@@ -11,7 +11,7 @@ def deltaV(isp, fuel):
     fuel -- Full Mass/Dry Mass ratio of that stage
     """
     # Tsiolkovsky Rocket Equation
-    deltav = isp * g * math.log(fuel)
+    deltav = isp * g0 * math.log(fuel)
     return deltav
 
 
@@ -26,7 +26,7 @@ def wetDryRatio(isp, dv):
     """
     # Tsiolkovsky Rocket Equation rearranged to solve for Full Mass/Dry Mass
     # ratio.
-    ratio = math.exp(dv / (isp * g))
+    ratio = math.exp(dv / (isp * g0))
     return ratio
 
 
@@ -65,6 +65,28 @@ def semiMajorPeri(sma, apo, r):
     # semiMajorAxis rearranged to solve for periapsis
     peri = 2 * (sma - r) - apo
     return peri
+
+
+def orbitalPeriod(sma, M):
+    """Return the sidereal period of an orbit.
+
+    sma -- Semi-major axis of orbiting body
+    M -- Mass of central body
+    """
+    # Kepler's Third Law rearranged to solve for orbital period
+    T = 2 * math.pi * (sma ** 3 / (G * M)) ** 0.5
+    return T
+
+
+def semiMajorPeriod(T, M):
+    """Return the semi-major axis needed for a given orbital period
+
+    T -- Sidereal orbital period
+    M -- Mass of central body
+    """
+    # Kepler's Third Law rearranged to solve for semi-major axis
+    sma =(G * M * T ** 2 / (4 * math.pi ** 2)) ** (1/3)
+    return sma
 
 
 def eccentricity(peri, apo, r):
@@ -176,28 +198,6 @@ def escapeOrbit(M, r, h, a):
     # Escape velocity from a given height minus Vis-Viva from the same height.
     ve = (2 * G * M / R) ** 0.5 - orbitalVelocity(M, r, h, a)
     return ve
-
-
-def orbitalPeriod(sma, M):
-    """Return the sidereal period of an orbit.
-
-    sma -- Semi-major axis of orbiting body
-    M -- Mass of central body
-    """
-    # Kepler's Third Law rearranged to solve for orbital period
-    T = 2 * math.pi * (sma ** 3 / (G * M)) ** 0.5
-    return T
-
-
-def semiMajorPeriod(T, M):
-    """Return the semi-major axis needed for a given orbital period
-
-    T -- Sidereal orbital period
-    M -- Mass of central body
-    """
-    # Kepler's Third Law rearranged to solve for semi-major axis
-    sma =(G * M * T ** 2 / (4 * math.pi ** 2)) ** (1/3)
-    return sma
 
 
 if __name__ == '__main__':
