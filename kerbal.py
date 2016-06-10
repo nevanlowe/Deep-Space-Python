@@ -2,6 +2,7 @@ import math
 
 G = 6.67408e-11
 g0 = 9.81
+KERBINMASS = 5.2915793e+22
 
 
 def deltaV(isp, fuel):
@@ -99,14 +100,35 @@ def eccentricity(peri, apo, r):
     # altitude meter does not include the central body's radius.
     maximum = apo + r
     minimum = peri + r
+    # Elliptical orbit eccentricity formula
     e = (maximum - minimum) / (maximum + minimum)
     return e
 
 
 def hyperEccentricity(peri, r, v, M):
+    """Return the eccentricity of a hyperbolic orbit.
+
+    The eccentricity() function can't be used for hyperbolic orbits because
+    hyperbolic orbits lack an apoapsis. This function uses other orbital
+    parameters instead, removing the need for an apoapsis. This can also be
+    used for parabolic orbits, but I don't know why you would ever need to
+    calculate the eccentricity of a parabolic orbit ever. Seriously. If you
+    ever need to calculate the eccentricity of a parabolic orbit, you are doing
+    something horribly horribly wrong and you should stop to reconsider your
+    life and/or conic sections.
+
+    peri -- Periapsis of hyperbolic orbit
+    r -- Radius of central body
+    v -- Velocity at periapsis
+    M -- Mass of central body
+    """
+    # Adds the central body's radius to the two altitudes because KSP's
+    # altitude meter does not include the central body's radius.
     h = peri + r
+    # Vis-viva rearranged to solve for semi-major axis
     sma = h*G*M/(2*G*M - h*v**2)
-    e = 1 + h/sma
+    # Eccentricity of a hyperbola formula
+    e = (sma-h)/sma
     return e
 
 
@@ -207,9 +229,23 @@ def escapeOrbit(M, r, h, a):
 
 
 def ejectionDelta(hev, M, sma, peri, r):
+    """Return the required DeltaV for a given Hyperbolic Excess Velocity.
+
+    hev -- Desired hyperbolic excess velocity
+    M -- Mass of central body
+    sma -- Semi-major axis of original orbit
+    peri -- Periapsis of hyperbolic orbit
+    r -- Radius of central body
+    """
+    # Adds the central body's radius to the two altitudes because KSP's
+    # altitude meter does not include the central body's radius.
     h = peri + r
+    # Hyperbolic excess velocity rearranged to solve for hyperbolic semi-major
+    # axis.
     hsma = -G*M / hev ** 2
+    # Vis-viva
     v = ((2/h-1/hsma)*G*M)**0.5
+    # Previous equation minus vis-viva for the parking orbit.
     delta = v - orbitalVelocity(M, r, peri, sma)
     return delta
 
