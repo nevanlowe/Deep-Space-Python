@@ -8,7 +8,7 @@ def deltaV(isp, fuel):
     """Return the DeltaV of a rocket's stage.
 
     isp -- Specific Impulse of the rocket engine (in seconds)
-    fuel -- Full Mass/Dry Mass ratio of that stage
+    fuel -- Mass fraction of that stage
     """
     # Tsiolkovsky Rocket Equation
     deltav = isp * g0 * math.log(fuel)
@@ -16,7 +16,7 @@ def deltaV(isp, fuel):
 
 
 def wetDryRatio(isp, dv):
-    """Return the Full Mass/Dry Mass ratio needed to reach a given DeltaV.
+    """Return the mass fraction needed to reach a given DeltaV.
 
     Note that as of KSP version 1.1.2, a ratio > 9 is not possible using stock
     fuel tanks. If you get an answer higher than 9, then you are SOL.
@@ -24,8 +24,7 @@ def wetDryRatio(isp, dv):
     isp -- Specific Impulse of the rocket engine (in seconds)
     dv -- DeltaV you want to reach
     """
-    # Tsiolkovsky Rocket Equation rearranged to solve for Full Mass/Dry Mass
-    # ratio.
+    # Tsiolkovsky Rocket Equation rearranged to solve for mass fraction.
     ratio = math.exp(dv / (isp * g0))
     return ratio
 
@@ -73,7 +72,7 @@ def orbitalPeriod(sma, M):
     sma -- Semi-major axis of orbiting body
     M -- Mass of central body
     """
-    # Kepler's Third Law rearranged to solve for orbital period
+    # Kepler's Third Law arranged to solve for orbital period
     T = 2 * math.pi * (sma ** 3 / (G * M)) ** 0.5
     return T
 
@@ -84,7 +83,7 @@ def semiMajorPeriod(T, M):
     T -- Sidereal orbital period
     M -- Mass of central body
     """
-    # Kepler's Third Law rearranged to solve for semi-major axis
+    # Kepler's Third Law arranged to solve for semi-major axis
     sma =(G * M * T ** 2 / (4 * math.pi ** 2)) ** (1/3)
     return sma
 
@@ -198,6 +197,14 @@ def escapeOrbit(M, r, h, a):
     # Escape velocity from a given height minus Vis-Viva from the same height.
     ve = (2 * G * M / R) ** 0.5 - orbitalVelocity(M, r, h, a)
     return ve
+
+
+def ejectionDelta(hev, M, sma, peri, r):
+    h = peri + r
+    hsma = -G*M / hev ** 2
+    v = ((2/h-1/hsma)*G*M)**0.5
+    delta = v - orbitalVelocity(M, r, peri, sma)
+    return delta
 
 
 if __name__ == '__main__':
