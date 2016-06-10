@@ -89,7 +89,7 @@ def semiMajorPeriod(T, M):
 
 
 def eccentricity(peri, apo, r):
-    """Return the eccentricity of an orbit.
+    """Return the eccentricity of an elliptical orbit.
 
     peri -- Periapsis of your orbit
     apo -- Apoapsis of your orbit
@@ -100,6 +100,13 @@ def eccentricity(peri, apo, r):
     maximum = apo + r
     minimum = peri + r
     e = (maximum - minimum) / (maximum + minimum)
+    return e
+
+
+def hyperEccentricity(peri, r, v, M):
+    h = peri + r
+    sma = h*G*M/(2*G*M - h*v**2)
+    e = 1 + h/sma
     return e
 
 
