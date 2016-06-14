@@ -250,6 +250,14 @@ def ejectionDelta(hev, M, sma, peri, r):
     return delta
 
 
+def ejectionAngle(hev, M, peri, r):
+    h = peri + r
+    hsma = -G * M / hev ** 2
+    asymtoticAngle = math.acos(hsma/(hsma-h))
+    ejectAngle = 180 - math.degrees(asymtoticAngle)
+    return ejectAngle
+
+
 if __name__ == '__main__':
     pass
 else:
