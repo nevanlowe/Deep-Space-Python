@@ -85,7 +85,7 @@ def semiMajorPeriod(T, M):
     M -- Mass of central body
     """
     # Kepler's Third Law arranged to solve for semi-major axis
-    sma =(G * M * T ** 2 / (4 * math.pi ** 2)) ** (1/3)
+    sma = (G * M * T ** 2 / (4 * math.pi ** 2)) ** (1 / 3)
     return sma
 
 
@@ -126,9 +126,9 @@ def hyperEccentricity(peri, r, v, M):
     # altitude meter does not include the central body's radius.
     h = peri + r
     # Vis-viva rearranged to solve for semi-major axis
-    sma = h*G*M/(2*G*M - h*v**2)
+    sma = h * G * M / (2 * G * M - h * v ** 2)
     # Eccentricity of a hyperbola formula
-    e = (sma-h)/sma
+    e = (sma - h) / sma
     return e
 
 
@@ -247,9 +247,9 @@ def ejectionVelocity(hev, M, peri, r, delta=False, sma=None):
     h = peri + r
     # Hyperbolic excess velocity rearranged to solve for hyperbolic semi-major
     # axis.
-    hsma = -G*M / hev ** 2
+    hsma = -G * M / hev ** 2
     # Vis-viva for our hyperbolic orbit at periapsis
-    v = ((2/h-1/hsma)*G*M)**0.5
+    v = ((2 / h - 1 / hsma) * G * M) ** 0.5
     if delta:
         if sma == None:
             sma = h
@@ -284,7 +284,7 @@ def ejectionAngle(hev, M, peri, r):
     # distance to the focal point, which is just the periapsis. So the inverse
     # cosine of a/c can be used to find the angle between the transverse axis
     # and the asymptotes (in radians).
-    asymptoticAngle = math.acos(hsma/(hsma-h))
+    asymptoticAngle = math.acos(hsma / (hsma - h))
     # The angle of ejection and asymptotic angle are supplementary, so we can
     # subtract one from 180 to get the other. We still need to convert to
     # degrees.
