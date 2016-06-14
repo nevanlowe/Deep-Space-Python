@@ -122,7 +122,7 @@ def hyperEccentricity(peri, r, v, M):
     v -- Velocity at periapsis
     M -- Mass of central body
     """
-    # Adds the central body's radius to the two altitudes because KSP's
+    # Adds the central body's radius to the periapsis because KSP's
     # altitude meter does not include the central body's radius.
     h = peri + r
     # Vis-viva rearranged to solve for semi-major axis
@@ -204,7 +204,7 @@ def orbitalVelocity(M, r, h, a):
     h -- Current height above surface
     a -- Semi-major axis of orbit
     """
-    # Adds the central body's radius to the two altitudes because KSP's
+    # Adds the central body's radius to the current height because KSP's
     # altitude meter does not include the central body's radius.
     R = h + r
     # Vis-Viva for a given orbital height
@@ -220,7 +220,7 @@ def escapeOrbit(M, r, h, a):
     h -- Current height above surface
     a -- Semi-major axis of orbit
     """
-    # Adds the central body's radius to the two altitudes because KSP's
+    # Adds the central body's radius to the current height because KSP's
     # altitude meter does not include the central body's radius.
     R = h + r
     # Escape velocity from a given height minus Vis-Viva from the same height.
@@ -242,7 +242,7 @@ def ejectionVelocity(hev, M, peri, r, delta=False, sma=None):
     necessary DeltaV
     sma -- Semi-major axis of parking orbit
     """
-    # Adds the central body's radius to the two altitudes because KSP's
+    # Adds the central body's radius to the periapsis because KSP's
     # altitude meter does not include the central body's radius.
     h = peri + r
     # Hyperbolic excess velocity rearranged to solve for hyperbolic semi-major
@@ -261,9 +261,33 @@ def ejectionVelocity(hev, M, peri, r, delta=False, sma=None):
 
 
 def ejectionAngle(hev, M, peri, r):
+    """Return the angle required for your HEV to align with the planet's orbit.
+
+    Doing an ejection burn is more efficient than doing a standard Hohmann
+    maneuver (because of the Oberth Effect or something), but it's more
+    complex. You still need a phase angle, but you also need an ejection angle
+    in order for your hyperbolic excess velocity to be parallel with your
+    planet's prograde or retrograde vectors. The angle is between the
+    transverse axis (basically a line between you and the center of your
+    planet) and the planet's prograde or retrograde vector.
+    """
+    # Adds the central body's radius to the periapsis because KSP's
+    # altitude meter does not include the central body's radius.
     h = peri + r
+    # Hyperbolic excess velocity rearranged to solve for hyperbolic semi-major
+    # axis.
     hsma = -G * M / hev ** 2
+    # The hyperbolic parameters a is the distance between the center of the
+    # hyperbola and a vertex, b is the vertical distance between the vertex and
+    # asymptote, and c is the distance between the center of the hyperbola and
+    # a focal point. The three form a right triangle, and c is just a + the
+    # distance to the focal point, which is just the periapsis. So the inverse
+    # cosine of a/c can be used to find the angle between the transverse axis
+    # and the asymptotes (in radians).
     asymptoticAngle = math.acos(hsma/(hsma-h))
+    # The angle of ejection and asymptotic angle are supplementary, so we can
+    # subtract one from 180 to get the other. We still need to convert to
+    # degrees.
     ejectAngle = 180 - math.degrees(asymptoticAngle)
     return ejectAngle
 
