@@ -228,14 +228,19 @@ def escapeOrbit(M, r, h, a):
     return ve
 
 
-def ejectionDelta(hev, M, sma, peri, r):
-    """Return the required DeltaV for a given Hyperbolic Excess Velocity.
+def ejectionVelocity(hev, M, peri, r, delta=False, sma=None):
+    """Return the velocity at periapsis for a given Hyperbolic Excess Velocity.
 
+    It can also alternatively return the DeltaV required to achieve that
+    ejection velocity. If you want the necessary DeltaV, then the parking orbit
+    assumed to be circular unless you provide a semi-major axis.
     hev -- Desired hyperbolic excess velocity
     M -- Mass of central body
-    sma -- Semi-major axis of original orbit
     peri -- Periapsis of hyperbolic orbit
     r -- Radius of central body
+    delta -- False returns orbital velocity at periapsis, true returns the
+    necessary DeltaV
+    sma -- Semi-major axis of parking orbit
     """
     # Adds the central body's radius to the two altitudes because KSP's
     # altitude meter does not include the central body's radius.
@@ -243,18 +248,23 @@ def ejectionDelta(hev, M, sma, peri, r):
     # Hyperbolic excess velocity rearranged to solve for hyperbolic semi-major
     # axis.
     hsma = -G*M / hev ** 2
-    # Vis-viva
+    # Vis-viva for our hyperbolic orbit at periapsis
     v = ((2/h-1/hsma)*G*M)**0.5
-    # Previous equation minus vis-viva for the parking orbit.
-    delta = v - orbitalVelocity(M, r, peri, sma)
-    return delta
+    if delta:
+        if sma == None:
+            sma = h
+        # Previous equation minus vis-viva for the parking orbit.
+        delta = v - orbitalVelocity(M, r, peri, sma)
+        return delta
+    else:
+        return v
 
 
 def ejectionAngle(hev, M, peri, r):
     h = peri + r
     hsma = -G * M / hev ** 2
-    asymtoticAngle = math.acos(hsma/(hsma-h))
-    ejectAngle = 180 - math.degrees(asymtoticAngle)
+    asymptoticAngle = math.acos(hsma/(hsma-h))
+    ejectAngle = 180 - math.degrees(asymptoticAngle)
     return ejectAngle
 
 
