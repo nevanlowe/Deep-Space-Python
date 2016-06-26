@@ -274,8 +274,9 @@ def ejectionAngle(hev, M, peri, r):
     # Adds the central body's radius to the periapsis because KSP's
     # altitude meter does not include the central body's radius.
     h = peri + r
-    # Hyperbolic excess velocity rearranged to solve for hyperbolic semi-major
-    # axis.
+    # Characteristic Energy rearranged to solve for hyperbolic semi-major
+    # axis. Hyperbolic excess velocity squared is equal to characteristic
+    # energy
     hsma = -G * M / hev ** 2
     # The hyperbolic parameters a is the distance between the center of the
     # hyperbola and a vertex, b is the vertical distance between the vertex and
