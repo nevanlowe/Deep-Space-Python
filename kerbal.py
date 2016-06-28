@@ -270,6 +270,38 @@ def ejectionVelocity(hev, M, peri, r, delta=False, sma=None):
         return v
 
 
+def ejectionVelocity2(ev, SoI, M, peri, r, delta=False, sma=None):
+    """Return the velocity at periapsis for a given Excess Velocity.
+
+    This is an attempt to make a more accurate form of the ejectionVelocity
+    function by using desired velocity at SoI change, not at infinity like the
+    previous function
+
+    ev -- Desired excess velocity leaving the planet
+    SoI -- Sphere of Influence
+    M -- Mass of central body
+    peri -- Periapsis of hyperbolic orbit
+    r -- Radius of central body
+    delta -- False returns orbital velocity at periapsis, true returns the
+    necessary DeltaV
+    sma -- Semi-major axis of parking orbit
+    """
+    # Adds the central body's radius to the periapsis because KSP's
+    # altitude meter does not include the central body's radius.
+    h = peri + r
+    hsma = 1 / (2 / SoI - ev ** 2 / (G * M))
+    # Vis-viva for our hyperbolic orbit at periapsis
+    v = ((2 / h - 1 / hsma) * G * M) ** 0.5
+    if delta:
+        if sma == None:
+            sma = h
+        # Previous equation minus vis-viva for the parking orbit.
+        delta = v - orbitalVelocity(M, r, peri, sma)
+        return delta
+    else:
+        return v
+
+
 def ejectionAngle(hev, M, peri, r):
     """Return the angle required for your HEV to align with the planet's orbit.
 
