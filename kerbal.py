@@ -234,6 +234,16 @@ def ejectionVelocity(hev, M, peri, r, delta=False, sma=None):
     It can also alternatively return the DeltaV required to achieve that
     ejection velocity. If you want the necessary DeltaV, then the parking orbit
     assumed to be circular unless you provide a semi-major axis.
+
+    Note that this solution is only approximate, as your craft will leave the
+    host's sphere of influence before it reaches hyperbolic excess velocity.
+    This gives a slightly larger velocity than actually necessary, but this is
+    not a huge deal as having an excess deltaV "safety net" is usually
+    necessary anyway because of things like atmospheres and sub-optimal
+    launches. The timing of the encounter is a problem and will change the
+    phase angle, but spheres of influence are fairly large and you can always
+    adjust your final orbit.
+
     hev -- Desired hyperbolic excess velocity
     M -- Mass of central body
     peri -- Periapsis of hyperbolic orbit
@@ -270,6 +280,12 @@ def ejectionAngle(hev, M, peri, r):
     planet's prograde or retrograde vectors. The angle is between the
     transverse axis (basically a line between you and the center of your
     planet) and the planet's prograde or retrograde vector.
+
+    Note that this solution is only approximate, as your craft will leave the
+    host's sphere of influence before it reaches hyperbolic excess velocity.
+    So the angle is a slight overestimation, and an optimal burn would have a
+    slightly smaller angle. This is a larger problem than the velocity because
+    an incorrect angle has no advantages, while excess velocity has benefits.
     """
     # Adds the central body's radius to the periapsis because KSP's
     # altitude meter does not include the central body's radius.
