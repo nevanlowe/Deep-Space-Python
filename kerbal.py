@@ -354,7 +354,7 @@ def ejectionAngle2(ev, SoI, M, peri, r):
     A = math.asin(math.sin(trueAnom)*2*c/fp)
     angle = math.pi-trueAnom-A/2
     ejectAngle=180-math.degrees(angle)
-    return fp, SoI-2*a, math.degrees(A), ejectAngle
+    return ejectAngle
 
 
 if __name__ == '__main__':
