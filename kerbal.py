@@ -340,6 +340,23 @@ def ejectionAngle(hev, M, peri, r):
     return ejectAngle
 
 
+def ejectionAngle2(ev, SoI, M, peri, r):
+    """Return the angle required for your EV to align with the planet's orbit.
+
+    This is an incomplete attempt at fixing the inaccuracies in ejectionAngle()
+    """
+    h = peri + r
+    a = 1 / (2 / SoI - ev ** 2 / (G * M))
+    c = abs(a - h)
+    e = c/-a
+    trueAnom = math.acos((a*(1-e**2)-SoI)/(SoI*e))
+    fp = ((2*c)**2 + SoI**2 - 2*2*c*SoI*math.cos(trueAnom))**0.5
+    A = math.asin(math.sin(trueAnom)*2*c/fp)
+    angle = math.pi-trueAnom-A/2
+    ejectAngle=180-math.degrees(angle)
+    return fp, SoI-2*a, math.degrees(A), ejectAngle
+
+
 if __name__ == '__main__':
     pass
 else:
