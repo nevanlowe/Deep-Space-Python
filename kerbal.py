@@ -293,7 +293,7 @@ def ejectionVelocity2(ev, SoI, M, peri, r, delta=False, sma=None):
     # Vis-viva for our hyperbolic orbit at periapsis
     v = ((2 / h - 1 / hsma) * G * M) ** 0.5
     if delta:
-        if sma == None:
+        if sma is None:
             sma = h
         # Previous equation minus vis-viva for the parking orbit.
         delta = v - orbitalVelocity(M, r, peri, sma)
