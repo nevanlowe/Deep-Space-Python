@@ -344,15 +344,79 @@ def ejectionAngle2(ev, SoI, M, peri, r):
     """Return the angle required for your EV to align with the planet's orbit.
 
     This is an incomplete attempt at fixing the inaccuracies in ejectionAngle()
+    Currently it provides a more accurate answer than ejectionAngle(). However,
+    it crashes if ev or peri are too small. That needs to be fixed before this
+    can become the default.
+
+    ev -- Desired excess velocity leaving the planet
+    SoI -- Sphere of Influence
+    M -- Mass of central body
+    peri -- Periapsis of hyperbolic orbit
+    r -- Radius of central body
     """
+    # Adds the central body's radius to the periapsis because KSP's
+    # altitude meter does not include the central body's radius.
     h = peri + r
+    # Vis-Viva equation rearranged to solve for semi-major axis using velocity
+    # at SoI change. Semi-major axis is just the distance between periapsis
+    # and the center of the hyperbola
     a = 1 / (2 / SoI - ev ** 2 / (G * M))
+    # This is the distance between the focus of the hyperbola and the center by
+    # subtracting the altitude of the periapsis from the (negative) semi-major
+    # axis and using absolute value
     c = abs(a - h)
+    # Calculating eccentricity. Dividing c by negative a because the semi-major
+    # axis is negative and we need the eccentricity to be positive
     e = c/-a
+    # This is the true anomaly which is basically just the angle between the
+    # transverse axis which connects the focus to the periapsis and a line
+    # which connects the focus to the current position in orbit (in this case,
+    # at the SoI change).
+    #
+    # Also, this step can crash if excess velocity or periapsis height are too
+    # small. Not entirely sure why.
     trueAnom = math.acos((a*(1-e**2)-SoI)/(SoI*e))
+    # Now here we have a triangle with the corners being the two focal points
+    # and the current position in orbit (in this case, the SoI change). We know
+    # the distance between focal points is 2*c, and the distance between one
+    # focal point and current position in orbit is just the altitude (or SoI).
+    # The final side length (the distance between current position in orbit and
+    # the OTHER focal point (the one for the other arm)) can be calculated
+    # using two side lengths and angle that is opposite to the unknown side.
+    # And we have that, it's our true anomaly. We really are just dealing with
+    # a Side-Angle-Side triangle, and so we use the Generalized Pythagorean
+    # Theorem to solve for the unknown side by using the Special Pythagorean
+    # Theorem and subtracting 2 times the known side lengths times the cosine
+    # of the known angle.
     fp = ((2*c)**2 + SoI**2 - 2*2*c*SoI*math.cos(trueAnom))**0.5
+    # Now we know all of the side lengths and one angle. It is a mathematical
+    # law that the ratio of an angle's sine and the length of the opposing side
+    # is the same for all angles in a triangle. So we can set up an expression
+    # where we have the sine of the true anomaly times the distance between
+    # focal points over the distance between the point in the orbit and the
+    # other focal point. This will equal the sine of the angle that opposes
+    # the side that is the distance between focal points. This means that we
+    # can take the sin**-1 or arcsine (the two are mathematically identical)
+    # of that expression to get the angle between of the lines connecting the
+    # focal points to the spacecraft.
     A = math.asin(math.sin(trueAnom)*2*c/fp)
+    # Now the angle we want to find is the angle between the line tangent to
+    # the hyperbola at that point in the orbit (basically our velocity) and the
+    # transverse axis (our original function implicitly assumes that the
+    # spacecraft is at infinity when it changes SoI, and that velocity angle =
+    # asymptotic angle). Now 180 - our true anomaly is going to be the angle
+    # between the line connecting our spacecraft to the central body and the
+    # transverse axis. The line tangent to the hyperbola bisects the angle
+    # between the lines connecting the focal points to the spacecraft. By
+    # dividing that angle in two, and subtracting it from the angle between
+    # the line connecting our spacecraft to the central body and the transverse
+    # axis, we can get the angle between the line tangent to the hyperbola and
+    # the transverse axis. the reason we subtract from pi instead of 180 is
+    # because radians.
     angle = math.pi-trueAnom-A/2
+    # The angle of ejection and the angle between the line tangent to the
+    # hyperbola and the transverse axis are supplementary, so we can subtract
+    # one from 180 to get the other. We still need to convert to degrees.
     ejectAngle=180-math.degrees(angle)
     return ejectAngle
 
